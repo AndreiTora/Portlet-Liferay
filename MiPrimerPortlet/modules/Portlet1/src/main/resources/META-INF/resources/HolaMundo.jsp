@@ -1,4 +1,4 @@
 <%@ include file="/init.jsp" %>
 
 
-<p>holi</p>
+<p>Hola Mundo.</p>
