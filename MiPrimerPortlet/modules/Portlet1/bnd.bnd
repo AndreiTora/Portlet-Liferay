@@ -1,0 +1,4 @@
+Bundle-Name: Portlet1
+Bundle-SymbolicName: com.andrea.formacion.portlet1
+Bundle-Version: 1.0.0
+Export-Package: com.andrea.formacion.portlet1.constants
