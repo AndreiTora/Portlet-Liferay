@@ -2,7 +2,7 @@
 
 
 <table>
-
+	
 	<tr>
 		<th>DNI:</th>
 		<th>Nombre:</th>
@@ -16,5 +16,8 @@
 		<td>${cliente.importe}</td>
 	</tr>
 	</c:forEach>
-
+	
+	
 </table>
+
+<b><a href='<portlet:renderURL/>'>Volver</a></b>
