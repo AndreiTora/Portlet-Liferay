@@ -76,13 +76,7 @@ public class Portlet1Portlet extends MVCPortlet {
 			try {
 				Layout layout = LayoutLocalServiceUtil.getLayout(layoutKey.getLayoutId());
 				
-				
-				System.out.println(layout.getChildren());
-				
-				System.out.println("  ---  ");
-				
-				System.out.println(layout.getAncestors());
-				File file = new File("C:/Users/acanas/git/primerportletgit/MiPrimerPortlet/modules/Portlet1/src/main/resources/META-INF/resources/portlet.csv");
+				File file = new File("C:/Users/acanas/git/primerportletgit/MiPrimerPortlet/modules/Portlet1/src/main/resources/META-INF/resources/resultadoPrueba.csv");
 				  
 				//Create the file
 				if (file.createNewFile())
@@ -92,19 +86,19 @@ public class Portlet1Portlet extends MVCPortlet {
 				    System.out.println("File already exists.");
 				}
 				
-				String csvFile = "C:/Users/acanas/git/primerportletgit/MiPrimerPortlet/modules/Portlet1/src/main/resources/META-INF/resources/portlet.csv";
+				String csvFile = "C:/Users/acanas/git/primerportletgit/MiPrimerPortlet/modules/Portlet1/src/main/resources/META-INF/resources/resultadoPrueba.csv";
 				FileWriter writer = new FileWriter(csvFile);
 				 
 				 List<Layout> layouts = Arrays.asList(layout);
 
 			        //for header
-			        CSVUtils.writeLine(writer, Arrays.asList("Title", "URL", "Type"));
+			        CSVUtils.writeLine(writer, Arrays.asList("Create Date", "URL", "Type"));
 
 			        for (Layout d : layouts) {
 
 			            List<String> list = new ArrayList<>();
-			            
-			            list.add(d.getTitle());
+
+			            list.add(d.getCreateDate().toString());
 			            list.add(d.getFriendlyURL());
 			            list.add(d.getType());
 			            
