@@ -1,37 +1,16 @@
 package com.andrea.formacion.portlet1.portlet;
 
 import com.andrea.formacion.portlet1.constants.Portlet1PortletKeys;
-import com.andrea.formacion.portlet1.utils.CSVUtils;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.OutputStreamWriter;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.ProgressTracker;
-import com.liferay.portal.kernel.util.Props;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
-import com.liferay.portal.kernel.util.CSVUtil;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
@@ -69,48 +48,9 @@ public class Portlet1Portlet extends MVCPortlet {
 	@Override
 	public void render(RenderRequest renderRequest, RenderResponse renderResponse)
 			throws IOException, PortletException {
-
-			Layout layoutKey = (Layout) renderRequest.getAttribute(WebKeys.LAYOUT);
-			
-			
-			try {
-				Layout layout = LayoutLocalServiceUtil.getLayout(layoutKey.getLayoutId());
-				
-				File file = new File("C:/Users/acanas/git/primerportletgit/MiPrimerPortlet/modules/Portlet1/src/main/resources/META-INF/resources/resultadoPrueba.csv");
-				  
-				//Create the file
-				if (file.createNewFile()) {
-				    System.out.println("File is created!");
-				} else {
-				    System.out.println("File already exists.");
-				}
-				
-				String csvFile = "C:/Users/acanas/git/primerportletgit/MiPrimerPortlet/modules/Portlet1/src/main/resources/META-INF/resources/resultadoPrueba.csv";
-				FileWriter writer = new FileWriter(csvFile);
-				 
-				 List<Layout> layouts = Arrays.asList(layout);
-
-			        //for header
-			        CSVUtils.writeLine(writer, Arrays.asList("Create Date", "URL", "Type"));
-
-			        for (Layout d : layouts) {
-
-			            List<String> list = new ArrayList<>();
-
-			            list.add(d.getCreateDate().toString());
-			            list.add(d.getFriendlyURL());
-			            list.add(d.getType());
-			            
-			            CSVUtils.writeLine(writer, list);
-			        }
-
-		        writer.flush();
-		        writer.close();
-		        
-
-			} catch (PortalException e) {
-				e.printStackTrace();
-			}
+		
+		
+		
 			
 		super.render(renderRequest, renderResponse);
 	}
@@ -121,8 +61,8 @@ public class Portlet1Portlet extends MVCPortlet {
 		 resourceResponse.setContentType("application/csv");
 		 resourceResponse.addProperty( HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=listado.csv" );
 		         
-		    OutputStreamWriter osw=new OutputStreamWriter( resourceResponse.getPortletOutputStream() );
-		    CSVPrinter printer= new CSVPrinter(
+		    OutputStreamWriter osw = new OutputStreamWriter( resourceResponse.getPortletOutputStream() );
+		    CSVPrinter printer = new CSVPrinter(
 		        osw,
 		        CSVFormat.DEFAULT.withHeader("Create Date", "URL", "Type")
 		        );
@@ -153,13 +93,10 @@ public class Portlet1Portlet extends MVCPortlet {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
-		
-		Layout layoutKey = (Layout) themeDisplay.getLayout();
-		Layout layout = LayoutLocalServiceUtil.getLayout(layoutKey.getLayoutId());
-		List<Layout> layouts = Arrays.asList(layout);
-		
-		System.out.println(layouts);
-		
+
+		long groupId = themeDisplay.getScopeGroupId();
+		List<Layout> layouts =LayoutLocalServiceUtil.getLayouts(groupId, false);
+		        
 		return layouts;
 		
 	}
