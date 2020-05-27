@@ -7,9 +7,12 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.portlet.Portlet;
@@ -44,41 +47,50 @@ import org.osgi.service.component.annotations.Component;
 	service = Portlet.class
 )
 public class Portlet1Portlet extends MVCPortlet {
-
+	
+	private final String ENCODING = "ISO-8859-1";
+	private final String FORMAT_DATE = "yyyy-MM-dd";
+	private final String[] header = {"Name", "Create Date", "URL", "Type", "Parent Id"};
+	
+	SimpleDateFormat formatter = new SimpleDateFormat(FORMAT_DATE);
+	
 	@Override
 	public void render(RenderRequest renderRequest, RenderResponse renderResponse)
 			throws IOException, PortletException {
 		
-		
-		
-			
 		super.render(renderRequest, renderResponse);
 	}
 	
 	 @Override
 	 public void serveResource(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws IOException, PortletException {
 		
-		 resourceResponse.setContentType("application/csv");
-		 resourceResponse.addProperty( HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=listado.csv" );
+		 resourceResponse.setContentType(ContentTypes.TEXT_CSV_UTF8);
+		 resourceResponse.addProperty(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=listado.csv");
 		         
-		    OutputStreamWriter osw = new OutputStreamWriter( resourceResponse.getPortletOutputStream() );
+		    OutputStreamWriter osw = new OutputStreamWriter(resourceResponse.getPortletOutputStream(), ENCODING);
 		    CSVPrinter printer = new CSVPrinter(
 		        osw,
-		        CSVFormat.DEFAULT.withHeader("Create Date", "URL", "Type")
+		        CSVFormat.DEFAULT.withDelimiter(';').withHeader(header)
 		        );
 		     
 		    List<Layout> layouts;
+		    
 			try {
-				layouts = getLayouts(resourceRequest, resourceResponse); 
 				
+				layouts = getLayouts(resourceRequest, resourceResponse); 
+
 				for (Layout l : layouts) {
-		        printer.printRecord(
-		            l.getCreateDate().toString(),
-		            l.getFriendlyURL(),
-		            l.getType()
-		            );
-		        }
-			} catch (Exception e) {
+					printer.printRecord(
+							l.getNameCurrentValue(),
+							formatter.format(
+									l.getCreateDate()
+									),
+							l.getFriendlyURL(),
+							l.getType(),
+							l.getParentLayoutId()
+							);
+		        	}
+				} catch (Exception e) {
 
 				e.printStackTrace();
 			}
@@ -96,7 +108,7 @@ public class Portlet1Portlet extends MVCPortlet {
 
 		long groupId = themeDisplay.getScopeGroupId();
 		List<Layout> layouts =LayoutLocalServiceUtil.getLayouts(groupId, false);
-		        
+		
 		return layouts;
 		
 	}
