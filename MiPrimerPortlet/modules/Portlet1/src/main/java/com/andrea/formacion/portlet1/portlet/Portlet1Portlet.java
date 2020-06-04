@@ -50,7 +50,7 @@ public class Portlet1Portlet extends MVCPortlet {
 	
 	private final String ENCODING = "ISO-8859-1";
 	private final String FORMAT_DATE = "yyyy-MM-dd";
-	private final String[] header = {"Name", "Create Date", "URL", "Type", "Parent Id"};
+	private final String[] header = {"Id", "Name", "Create Date", "URL", "Type", "Parent Id"};
 	
 	SimpleDateFormat formatter = new SimpleDateFormat(FORMAT_DATE);
 	
@@ -59,6 +59,7 @@ public class Portlet1Portlet extends MVCPortlet {
 			throws IOException, PortletException {
 		
 		super.render(renderRequest, renderResponse);
+		
 	}
 	
 	 @Override
@@ -68,6 +69,7 @@ public class Portlet1Portlet extends MVCPortlet {
 		 resourceResponse.addProperty(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=listado.csv");
 		         
 		    OutputStreamWriter osw = new OutputStreamWriter(resourceResponse.getPortletOutputStream(), ENCODING);
+		    
 		    CSVPrinter printer = new CSVPrinter(
 		        osw,
 		        CSVFormat.DEFAULT.withDelimiter(';').withHeader(header)
@@ -81,6 +83,7 @@ public class Portlet1Portlet extends MVCPortlet {
 
 				for (Layout l : layouts) {
 					printer.printRecord(
+							l.getLayoutId(),
 							l.getNameCurrentValue(),
 							formatter.format(
 									l.getCreateDate()
