@@ -1,19 +1,17 @@
 <%@ include file="/init.jsp" %>
 
-<portlet:renderURL var='hola'>
-	<portlet:param name='jspPage' value='/HolaMundo.jsp'/>
+<portlet:renderURL var='import'>
+	<portlet:param name='jspPage' value='/ImportForm.jsp'/>
 </portlet:renderURL>
 
 <portlet:defineObjects />
 
 <portlet:resourceURL var="exportCSV" />
      
-<a href='${exportCSV}'>Exportar a CSV :D</a>
-
-
 
 <p>
 	<ul>
-		<li><a href="${hola}">Hola Mundo</a></li>
+		<li><a href='${exportCSV}'>Exportar a CSV :D</a></li>
+		<li><a href="${import}">Importación Archivo</a></li>
 	</ul>
 </p>

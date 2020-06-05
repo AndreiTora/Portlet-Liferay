@@ -8,13 +8,18 @@ import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.upload.UploadPortletRequest;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
@@ -26,6 +31,7 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.osgi.service.component.annotations.Component;
+
 
 
 /**
@@ -51,6 +57,9 @@ public class Portlet1Portlet extends MVCPortlet {
 	private final String ENCODING = "ISO-8859-1";
 	private final String FORMAT_DATE = "yyyy-MM-dd";
 	private final String[] header = {"Id", "Name", "Create Date", "URL", "Type", "Parent Id"};
+	
+	  private final static String fileInputName = "fileupload";
+	   private final static String baseDir = "C:/Users/acanas/git/primerportletgit/MiPrimerPortlet/modules/Portlet1/src/main/resources/META-INF/resources/files";
 	
 	SimpleDateFormat formatter = new SimpleDateFormat(FORMAT_DATE);
 	
@@ -115,6 +124,10 @@ public class Portlet1Portlet extends MVCPortlet {
 		return layouts;
 		
 	}
-
 	
+	public void uploadFileAction(ActionRequest actionRequest, ActionResponse actionResponse){
+		
+		System.out.println("hola");
+		
+	}
 }
