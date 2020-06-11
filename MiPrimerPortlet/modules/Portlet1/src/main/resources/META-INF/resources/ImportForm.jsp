@@ -9,14 +9,14 @@
 <portlet:defineObjects/>
 <p>Importación <b>Archivo CSV</b> portlet.</p>
  
-<portlet:actionURL name="uploadFileAction" var="actionURLByPortletTagURL">
+<portlet:actionURL name="uploadFileAction" var="uploadFile">
 </portlet:actionURL>
  
-<form action="${actionURLByPortletTagURL}" method="post">
+<form action="${uploadFile}" method="post" enctype="multipart/form-data">
     <table>
             
             <tr>
-                <td><input type="file" name="fileupload" id="fileupload" size="40" /></td>
+                <td><input type="file" name="<portlet:namespace/>uploadedFile" multiple="multiple"></td>
             </tr>
             
         </table>

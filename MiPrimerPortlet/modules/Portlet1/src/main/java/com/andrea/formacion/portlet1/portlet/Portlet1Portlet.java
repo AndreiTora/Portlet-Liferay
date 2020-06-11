@@ -2,6 +2,9 @@ package com.andrea.formacion.portlet1.portlet;
 
 import com.andrea.formacion.portlet1.constants.Portlet1PortletKeys;
 import com.liferay.portal.kernel.io.OutputStreamWriter;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
@@ -15,6 +18,9 @@ import com.liferay.portal.kernel.upload.UploadPortletRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -22,13 +28,18 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.ProcessAction;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.osgi.service.component.annotations.Component;
 
@@ -57,11 +68,10 @@ public class Portlet1Portlet extends MVCPortlet {
 	private final String ENCODING = "ISO-8859-1";
 	private final String FORMAT_DATE = "yyyy-MM-dd";
 	private final String[] header = {"Id", "Name", "Create Date", "URL", "Type", "Parent Id"};
-	
-	  private final static String fileInputName = "fileupload";
-	   private final static String baseDir = "C:/Users/acanas/git/primerportletgit/MiPrimerPortlet/modules/Portlet1/src/main/resources/META-INF/resources/files";
-	
+
 	SimpleDateFormat formatter = new SimpleDateFormat(FORMAT_DATE);
+	
+	private static Log _log = LogFactoryUtil.getLog(Portlet1Portlet.class);
 	
 	@Override
 	public void render(RenderRequest renderRequest, RenderResponse renderResponse)
@@ -125,9 +135,19 @@ public class Portlet1Portlet extends MVCPortlet {
 		
 	}
 	
-	public void uploadFileAction(ActionRequest actionRequest, ActionResponse actionResponse){
+	/* IMPORTACIÓN */
+	
+	@ProcessAction(name = "uploadFile")
+	public void uploadFileAction(ActionRequest actionRequest, ActionResponse actionResponse) throws IOException, PortletException {
 		
-		System.out.println("hola");
+		_log.info("Entrando en uploadFile");
 		
+		// ESTO PARA EL SERVIDOR Y NO SE SABE POR QUÉ :D 
+		
+//		HttpServletRequest request = PortalUtil.getHttpServletRequest(actionRequest);
+//		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(actionRequest);
+
 	}
+	
+	
 }
