@@ -4,23 +4,21 @@ import com.andrea.formacion.portlet1.constants.Portlet1PortletKeys;
 import com.liferay.portal.kernel.io.OutputStreamWriter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -28,7 +26,6 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
 import javax.portlet.ProcessAction;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -36,11 +33,11 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.osgi.service.component.annotations.Component;
 
 
@@ -140,14 +137,27 @@ public class Portlet1Portlet extends MVCPortlet {
 	@ProcessAction(name = "uploadFile")
 	public void uploadFileAction(ActionRequest actionRequest, ActionResponse actionResponse) throws IOException, PortletException {
 		
-		_log.info("Entrando en uploadFile");
-		
-		// ESTO PARA EL SERVIDOR Y NO SE SABE POR QUÉ :D 
-		
-//		HttpServletRequest request = PortalUtil.getHttpServletRequest(actionRequest);
-//		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(actionRequest);
+		_log.info("Entrando en uploadFile 2");
 
-	}
-	
+		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(actionRequest);
+		
+		File file = uploadRequest.getFile("uploadedFile");
+		
+		BufferedReader reader = Files.newBufferedReader(file.toPath(),  Charset.forName(ENCODING));
+        CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(';').withHeader(header));
+        
+        for (CSVRecord csvRecord : csvParser) {
+
+            String id = csvRecord.get("Id");
+            String name = csvRecord.get("Name");
+            String url = csvRecord.get("URL");
+            String type = csvRecord.get("Type");
+
+            System.out.println("Id : " + id);
+            System.out.println("Name : " + name);
+            System.out.println("URL : " + url);
+            System.out.println("Type : " + type);
+        }
+    }
 	
 }

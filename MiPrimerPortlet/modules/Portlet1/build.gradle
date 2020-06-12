@@ -8,7 +8,7 @@ dependencies {
 	compileOnly group: "com.liferay", name: "com.liferay.journal.taglib"
 	compileOnly group: "com.liferay", name: "com.liferay.layout.taglib"
 	compileOnly group: "com.liferay", name: "com.liferay.site.taglib"
-	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "5.4.0"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.util.taglib"
 	compileOnly group: "javax.portlet", name: "portlet-api"
 	compileOnly group: "javax.servlet", name: "javax.servlet-api"
