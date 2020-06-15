@@ -1,26 +1,44 @@
 package com.andrea.formacion.portlet1.portlet;
 
 import com.andrea.formacion.portlet1.constants.Portlet1PortletKeys;
+import com.liferay.expando.kernel.model.ExpandoBridge;
+import com.liferay.exportimport.kernel.lar.StagedModelType;
+import com.liferay.portal.kernel.exception.LocaleException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.OutputStreamWriter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.CacheModel;
+import com.liferay.portal.kernel.model.ColorScheme;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutSet;
+import com.liferay.portal.kernel.model.LayoutType;
+import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -33,6 +51,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -137,9 +156,11 @@ public class Portlet1Portlet extends MVCPortlet {
 	@ProcessAction(name = "uploadFile")
 	public void uploadFileAction(ActionRequest actionRequest, ActionResponse actionResponse) throws IOException, PortletException {
 		
-		_log.info("Entrando en uploadFile 2");
-
+		_log.info("Entrando en uploadFile");
 		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(actionRequest);
+		
+		ThemeDisplay themeDisplay =  (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		long groupId = themeDisplay.getLayout().getGroupId();
 		
 		File file = uploadRequest.getFile("uploadedFile");
 		
@@ -154,20 +175,36 @@ public class Portlet1Portlet extends MVCPortlet {
         		_log.info("Primera linea del CSV saltada");
         		primero = false;
         	} else {
-        	String id = csvRecord.get("Id");
-            String name = csvRecord.get("Name");
-            String url = csvRecord.get("URL");
-            String type = csvRecord.get("Type");
-            String parent = csvRecord.get("Parent Id");
-
-            System.out.println("Id : " + id);
-            System.out.println("Name : " + name);
-            System.out.println("URL : " + url);
-            System.out.println("Parent Id : " + parent);
+        		
+        	List<Layout> layouts =LayoutLocalServiceUtil.getLayouts(groupId, false);
+        	
+        	Layout layout = LayoutLocalServiceUtil.createLayout(groupId);
+        	
+        	layout.setLayoutId(Long.parseLong(csvRecord.get("Id")));
+        	layout.setName(csvRecord.get("Name"));
+        	layout.setFriendlyURL(csvRecord.get("URL"));
+        	layout.setType(csvRecord.get("Type"));
+        	layout.setParentLayoutId(Long.parseLong(csvRecord.get("Parent Id")));
+        	
+        	System.out.println(layout);
+        	
+        	
+//        	String id = csvRecord.get("Id");
+//            String name = csvRecord.get("Name");
+//            String url = csvRecord.get("URL");
+//            String type = csvRecord.get("Type");
+//            String parent = csvRecord.get("Parent Id");
+//
+//            System.out.println("Id : " + id);
+//            System.out.println("Name : " + name);
+//            System.out.println("URL : " + url);
+//            System.out.println("Type : " + type);
+//            System.out.println("Parent Id : " + parent);
 
         	}
 
         }
   
     }
+	
 }
