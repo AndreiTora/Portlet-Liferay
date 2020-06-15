@@ -146,18 +146,28 @@ public class Portlet1Portlet extends MVCPortlet {
 		BufferedReader reader = Files.newBufferedReader(file.toPath(),  Charset.forName(ENCODING));
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(';').withHeader(header));
         
+        boolean primero = true;
+        
         for (CSVRecord csvRecord : csvParser) {
-
-            String id = csvRecord.get("Id");
+        	
+        	if (primero) {
+        		_log.info("Primera linea del CSV saltada");
+        		primero = false;
+        	} else {
+        	String id = csvRecord.get("Id");
             String name = csvRecord.get("Name");
             String url = csvRecord.get("URL");
             String type = csvRecord.get("Type");
+            String parent = csvRecord.get("Parent Id");
 
             System.out.println("Id : " + id);
             System.out.println("Name : " + name);
             System.out.println("URL : " + url);
-            System.out.println("Type : " + type);
+            System.out.println("Parent Id : " + parent);
+
+        	}
+
         }
+  
     }
-	
 }
