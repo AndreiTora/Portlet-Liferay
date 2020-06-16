@@ -1,12 +1,14 @@
 package com.andrea.formacion.portlet1.portlet;
 
 import com.andrea.formacion.portlet1.constants.Portlet1PortletKeys;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.OutputStreamWriter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
@@ -63,7 +65,7 @@ public class Portlet1Portlet extends MVCPortlet {
 	
 	private final String ENCODING = "ISO-8859-1";
 	private final String FORMAT_DATE = "yyyy-MM-dd";
-	private final String[] header = {"Id", "Name", "Create Date", "URL", "Type", "Parent Id"};
+	private final String[] header = {"Id", "UuId", "Name", "Create Date", "URL", "Type", "Hidden", "Private", "Parent Id"};
 
 	SimpleDateFormat formatter = new SimpleDateFormat(FORMAT_DATE);
 	
@@ -99,12 +101,15 @@ public class Portlet1Portlet extends MVCPortlet {
 				for (Layout l : layouts) {
 					printer.printRecord(
 							l.getLayoutId(),
+							l.getUuid(),
 							l.getNameCurrentValue(),
 							formatter.format(
 									l.getCreateDate()
 									),
 							l.getFriendlyURL(),
 							l.getType(),
+							l.getHidden(),
+							l.getPrivateLayout(),
 							l.getParentLayoutId()
 							);
 		        	}
@@ -134,7 +139,8 @@ public class Portlet1Portlet extends MVCPortlet {
 	/* IMPORTACIÓN */
 	
 	@ProcessAction(name = "uploadFile")
-	public void uploadFileAction(ActionRequest actionRequest, ActionResponse actionResponse) throws IOException, PortletException {
+	public void uploadFileAction(ActionRequest actionRequest, ActionResponse actionResponse) 
+			throws IOException, PortletException {
 		
 		_log.info("Entrando en uploadFile");
 		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(actionRequest);
@@ -148,7 +154,9 @@ public class Portlet1Portlet extends MVCPortlet {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(';').withHeader(header));
         
         boolean primero = true;
-
+        
+        // Lectura de cada linea del CSV
+        
         for (CSVRecord csvRecord : csvParser) {
         	
         	// Me salto la primera linea del header
@@ -157,24 +165,38 @@ public class Portlet1Portlet extends MVCPortlet {
         		_log.info("Primera linea del CSV saltada");
         		primero = false;
         	} else {
-        		
-        	List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(groupId, false);
         	
-        	// Crep el molde del layout con los atributos de cada columna (excepto la fecha de creacion)
+        		// Compruebo si el layout ya existe o no
         	
-        	Layout layout = LayoutLocalServiceUtil.createLayout(groupId);
-        	
-        	layout.setLayoutId(Long.parseLong(csvRecord.get(header[0])));
-        	layout.setName(csvRecord.get(header[1]));
-        	layout.setFriendlyURL(csvRecord.get(header[2]));
-        	layout.setType(csvRecord.get(header[4]));
-        	layout.setParentLayoutId(Long.parseLong(csvRecord.get(header[5])));
-        	
-        	System.out.println(layout);
+        			try {
+						if(LayoutLocalServiceUtil.hasLayout(csvRecord.get(header[1]), groupId, false)) {
+							_log.info("Layout ya creado \n");
+						} else {        	
+							System.out.println(csvRecord.get(header[0]) + " <- id layout a anadir \n");
+							LayoutLocalServiceUtil.addLayout(
+									themeDisplay.getUserId(), 
+									groupId,
+									Boolean.parseBoolean(
+					        				csvRecord.get(header[7]
+					        						)), 
+									Long.parseLong(
+					        				csvRecord.get(header[8]
+					        						)), 
+									csvRecord.get(header[2]), 
+									"", 
+									"", 
+									csvRecord.get(header[5]), 
+									Boolean.parseBoolean(
+					        				csvRecord.get(header[6]
+					        						)), 
+									csvRecord.get(header[4]), 
+									ServiceContextThreadLocal.getServiceContext());
+						}
+					} catch (PortalException e) {
+						e.printStackTrace();
+					}
+        		}
         	}
-
-        }
-  
-    }
-	
+        System.out.println("------ Lista completa de Layouts ----- \n" + LayoutLocalServiceUtil.getLayouts(groupId, false));
+    }	
 }
