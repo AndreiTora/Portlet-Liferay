@@ -65,7 +65,7 @@ public class Portlet1Portlet extends MVCPortlet {
 	
 	private final String ENCODING = "ISO-8859-1";
 	private final String FORMAT_DATE = "yyyy-MM-dd";
-	private final String[] header = {"Id", "UuId", "Name", "Create Date", "URL", "Type", "Hidden", "Private", "Parent Id"};
+	private final String[] header = {"Id", "UuId", "Name", "Create Date", "URL", "Type", "Hidden", "Private", "Parent Id", "Title", "Description"};
 
 	SimpleDateFormat formatter = new SimpleDateFormat(FORMAT_DATE);
 	
@@ -110,7 +110,9 @@ public class Portlet1Portlet extends MVCPortlet {
 							l.getType(),
 							l.getHidden(),
 							l.getPrivateLayout(),
-							l.getParentLayoutId()
+							l.getParentLayoutId(),
+							l.getTitle(),
+							l.getDescription()
 							);
 		        	}
 				} catch (Exception e) {
@@ -154,25 +156,19 @@ public class Portlet1Portlet extends MVCPortlet {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(';').withHeader(header));
         
         boolean primero = true;
-        
-        // Lectura de cada linea del CSV
-        
+
         for (CSVRecord csvRecord : csvParser) {
-        	
-        	// Me salto la primera linea del header
+
         	
         	if (primero) {
         		_log.info("Primera linea del CSV saltada");
         		primero = false;
         	} else {
         	
-        		// Compruebo si el layout ya existe o no
-        	
         			try {
 						if(LayoutLocalServiceUtil.hasLayout(csvRecord.get(header[1]), groupId, false)) {
 							_log.info("Layout ya creado \n");
 						} else {        	
-							System.out.println(csvRecord.get(header[0]) + " <- id layout a anadir \n");
 							LayoutLocalServiceUtil.addLayout(
 									themeDisplay.getUserId(), 
 									groupId,
@@ -183,8 +179,8 @@ public class Portlet1Portlet extends MVCPortlet {
 					        				csvRecord.get(header[8]
 					        						)), 
 									csvRecord.get(header[2]), 
-									"", 
-									"", 
+									csvRecord.get(header[9]), 
+									csvRecord.get(header[10]), 
 									csvRecord.get(header[5]), 
 									Boolean.parseBoolean(
 					        				csvRecord.get(header[6]
@@ -197,6 +193,5 @@ public class Portlet1Portlet extends MVCPortlet {
 					}
         		}
         	}
-        System.out.println("------ Lista completa de Layouts ----- \n" + LayoutLocalServiceUtil.getLayouts(groupId, false));
     }	
 }
