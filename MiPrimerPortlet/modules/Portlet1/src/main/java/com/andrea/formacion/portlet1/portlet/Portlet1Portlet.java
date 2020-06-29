@@ -12,6 +12,7 @@ import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
@@ -95,7 +96,6 @@ public class Portlet1Portlet extends MVCPortlet {
 		    List<Layout> layouts;
 		    
 			try {
-				
 				layouts = getLayouts(resourceRequest, resourceResponse); 
 
 				for (Layout l : layouts) {
@@ -116,7 +116,6 @@ public class Portlet1Portlet extends MVCPortlet {
 							);
 		        	}
 				} catch (Exception e) {
-
 				e.printStackTrace();
 			}
 
@@ -146,7 +145,7 @@ public class Portlet1Portlet extends MVCPortlet {
 		
 		_log.info("Entrando en uploadFile");
 		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(actionRequest);
-		
+
 		ThemeDisplay themeDisplay =  (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 		long groupId = themeDisplay.getLayout().getGroupId();
 		
@@ -156,15 +155,39 @@ public class Portlet1Portlet extends MVCPortlet {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(';').withHeader(header));
         
         boolean primero = true;
+        
+        /* DELETE LAYOUTS */
 
-        for (CSVRecord csvRecord : csvParser) {
-
+        String deleteLayouts = ParamUtil.getString(actionRequest, "deleteLayouts");
+        
+        if(deleteLayouts.equals( "deleteLayouts")) {
+        	_log.info("Borrar Layouts seleccionado \n");
         	
+    		List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(groupId, false);
+        	
+    		for (Layout layout : layouts) {
+    			if (layout.getPlid() == themeDisplay.getLayout().getPlid()) {
+    				_log.info("Layout actual \n");
+    			} else {
+    				try {
+    					LayoutLocalServiceUtil.deleteLayout(layout.getPlid());
+    				} catch (PortalException e) {
+    					e.printStackTrace();
+		
+    				}
+    			}
+    		}
+        	
+        }
+        
+        /* IMPORT CSV*/
+        
+        for (CSVRecord csvRecord : csvParser) {
+ 	
         	if (primero) {
         		_log.info("Primera linea del CSV saltada");
         		primero = false;
         	} else {
-        	
         			try {
 						if(LayoutLocalServiceUtil.hasLayout(csvRecord.get(header[1]), groupId, false)) {
 							_log.info("Layout ya creado \n");

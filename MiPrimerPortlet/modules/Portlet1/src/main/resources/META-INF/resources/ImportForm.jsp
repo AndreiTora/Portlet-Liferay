@@ -18,7 +18,7 @@
             <tr>
                 <td><input type="file" name="<portlet:namespace/>uploadedFile" multiple="multiple"></td>
             </tr>
-            
+            <aui:input type="checkbox" id="deleteLayouts" label="Borrar todos los layouts del sitio antes de la importación" name="deleteLayouts" value="deleteLayouts"></aui:input>
         </table>
     
     
