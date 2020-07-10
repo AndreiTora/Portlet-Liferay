@@ -7,6 +7,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
@@ -216,5 +217,78 @@ public class Portlet1Portlet extends MVCPortlet {
 					}
         		}
         	}
+    }	
+	
+	/* IMPORTACIÓN HIJOS */
+	
+	@ProcessAction(name = "uploadHijosFile")
+	public void uploadHijosFileAction(ActionRequest actionRequest, ActionResponse actionResponse) 
+			throws IOException, PortletException {
+		
+		_log.info("Entrando en upload hijos File");
+		UploadPortletRequest uploadRequest = PortalUtil.getUploadPortletRequest(actionRequest);
+
+		ThemeDisplay themeDisplay =  (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		long groupId = themeDisplay.getLayout().getGroupId();
+		
+		File file = uploadRequest.getFile("uploadedHijosFile");
+		
+		BufferedReader reader = Files.newBufferedReader(file.toPath(),  Charset.forName(ENCODING));
+        CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(';').withHeader(header));
+        
+        boolean primero = true;
+        
+        String hijosLayout = ParamUtil.getString(actionRequest, "hijosLayout");
+    	List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(groupId, false);
+    	
+		for (Layout layout : layouts) {
+			System.out.println(layout.getFriendlyURL());
+			
+			if (layout.getFriendlyURL().equals(hijosLayout)) {
+				_log.info("Misma URL");
+				
+				try {
+					Layout layoutByUrl = LayoutLocalServiceUtil.getFriendlyURLLayout(groupId, false, layout.getFriendlyURL());
+					Long id = layoutByUrl.getLayoutId();
+					
+					System.out.println(layoutByUrl + "" + id);
+					
+					for (CSVRecord csvRecord : csvParser) {
+						
+					        	if (primero) {
+					        		_log.info("Primera linea del CSV saltada");
+					        		primero = false;
+					        	} else {
+				        			try {
+									if(LayoutLocalServiceUtil.hasLayout(csvRecord.get(header[1]), groupId, false)) {
+										_log.info("Layout ya creado \n");
+									} else {        	
+										LayoutLocalServiceUtil.addLayout(
+												themeDisplay.getUserId(), 
+												groupId,
+												Boolean.parseBoolean(
+								        				csvRecord.get(header[7]
+								        						)), 
+								        		id, 
+												csvRecord.get(header[2]), 
+												csvRecord.get(header[9]), 
+												csvRecord.get(header[10]), 
+												csvRecord.get(header[5]), 
+												Boolean.parseBoolean(
+							        				csvRecord.get(header[6]
+								        						)), 
+												csvRecord.get(header[4]), 
+												ServiceContextThreadLocal.getServiceContext());
+									}
+								} catch (PortalException e) {
+									e.printStackTrace();
+								}
+					        }
+					}
+				} catch (PortalException e) {
+					e.printStackTrace();
+				}
+			}
+		}
     }	
 }
