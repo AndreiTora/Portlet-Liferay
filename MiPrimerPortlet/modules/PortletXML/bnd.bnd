@@ -1,0 +1,4 @@
+Bundle-Name: PortletXML
+Bundle-SymbolicName: PortletXML
+Bundle-Version: 1.0.0
+Export-Package: PortletXML.constants

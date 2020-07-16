@@ -251,8 +251,6 @@ public class Portlet1Portlet extends MVCPortlet {
 					Layout layoutByUrl = LayoutLocalServiceUtil.getFriendlyURLLayout(groupId, false, layout.getFriendlyURL());
 					Long id = layoutByUrl.getLayoutId();
 					
-					System.out.println(layoutByUrl + "" + id);
-					
 					for (CSVRecord csvRecord : csvParser) {
 						
 					        	if (primero) {
