@@ -65,7 +65,8 @@ public class PortletXMLPortlet extends MVCPortlet {
 				 
 				 r1.put("from", prefrenceElement.element("from").getStringValue());
 				 r1.put("to", prefrenceElement.element("to").getStringValue());
-				 
+				 r1.put("type", prefrenceElement.element("to").attributeValue("type"));
+
 				 rules.add(r1);
 			 }
 			 

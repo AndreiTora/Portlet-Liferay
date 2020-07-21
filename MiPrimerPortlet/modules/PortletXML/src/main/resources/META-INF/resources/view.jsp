@@ -17,20 +17,17 @@
 
 <table>
 	<tr>
-		<td>From</td>
-		<td>To</td>
+		<th>From</td>
+		<th>To</td>
+		<th>Type</td>
 	</tr>
 
 	<c:forEach var='r' items='${rules}'>
 		<tr>
 			<td>${r.from}</td>
 			<td>${r.to}</td>
+			<td>${r.type}</td>
 		</tr>
 	</c:forEach>
 </table>
 
-<p>
-	<b><a href='<portlet:renderURL/>'>Volver</a></b>
-</p>
-
-</p>
