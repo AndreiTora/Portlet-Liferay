@@ -5,6 +5,7 @@ import PortletXML.constants.PortletXMLPortletKeys;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.DocumentException;
+import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 
 import java.io.FileInputStream;
@@ -54,13 +55,19 @@ public class PortletXMLPortlet extends MVCPortlet {
 	public void uploadFileAction(ActionRequest actionRequest, ActionResponse actionResponse) 
 			throws IOException, PortletException {
 		
-		System.out.println("hola");
 		try {
-			System.out.println("hol");
 			FileInputStream is = new FileInputStream("C:/Users/acanas/Documents/urlrewrite.xml");
 			Document doc = SAXReaderUtil.read(is);	
-			System.out.println(doc);
-			doc.toString();
+			
+			Element rootElement = doc.getRootElement();
+			
+			List<Element> preferences = rootElement.elements("rule");
+			 
+			 for(Element prefrenceElement  : preferences){                   
+				 System.out.println("FROM:" + prefrenceElement.element("from").getStringValue());
+				 System.out.println("TO:" + prefrenceElement.element("to").getStringValue()+"\n");
+				 //System.out.println("TO:" + prefrenceElement.element("to").getStringValue());
+			 }
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
