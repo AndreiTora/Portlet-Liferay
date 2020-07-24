@@ -10,7 +10,9 @@ import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -19,13 +21,11 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
-import javax.portlet.ProcessAction;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.xml.soap.Node;
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.osgi.service.component.annotations.Component;
-import org.xml.sax.InputSource;
 
 /**
  * @author acanas
@@ -46,6 +46,46 @@ import org.xml.sax.InputSource;
 	service = Portlet.class
 )
 public class PortletXMLPortlet extends MVCPortlet {
+	
+		public void newRule(ActionRequest actionRequest, ActionResponse actionResponse)
+				throws IOException, PortletException, TransformerConfigurationException {
+			String from = ParamUtil.getString(actionRequest, "from");
+			String to = ParamUtil.getString(actionRequest, "to");
+			String type = ParamUtil.getString(actionRequest, "type");
+			
+			System.out.println("FROM: " + from + " TO: " + to);
+			
+			try {
+				FileInputStream is = new FileInputStream("C:/Users/acanas/Documents/urlrewrite.xml");
+				Document doc = SAXReaderUtil.read(is);	
+				
+				Element rootElement = doc.getRootElement();
+
+			    Element ruleElement = SAXReaderUtil.createElement("rule");
+			      
+			    Element fromElement = ruleElement.addElement("from");
+			    fromElement.addText(from);
+			      
+			    Element toElement = ruleElement.addElement("to");
+			    toElement.addText(to);
+			    toElement.addAttribute("type", type);
+
+			    rootElement.add(ruleElement);
+			     
+			     try {  
+			            Writer w = new FileWriter("C:/Users/acanas/Documents/urlrewrite.xml");  
+			            String content = rootElement.asXML();  
+			            w.write(content);  
+			            w.close();  
+			        } catch (IOException e) {  
+			            e.printStackTrace();  
+			        }  
+			     
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+
+		}
 	@Override
 	public void render(RenderRequest renderRequest, RenderResponse renderResponse)
 			throws IOException, PortletException {

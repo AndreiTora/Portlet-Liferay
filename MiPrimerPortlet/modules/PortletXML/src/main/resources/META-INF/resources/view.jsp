@@ -11,11 +11,17 @@
 		prefix="liferay-portlet"%>
 	<liferay-theme:defineObjects />
 	<portlet:defineObjects />
+	
+<portlet:renderURL var='newRuleForm'>
+	<portlet:param name='jspPage' value='/newRuleForm.jsp'/>
+</portlet:renderURL>     
 <p>
 	Lectura <b>Archivo XML</b> portlet.
 </p>
 
 <table>
+
+<p><a href='${newRuleForm}'><aui:button value="Añadir Nueva Regla"/></a></p>
 	<tr>
 		<th>From</td>
 		<th>To</td>
@@ -30,4 +36,6 @@
 		</tr>
 	</c:forEach>
 </table>
+
+
 
