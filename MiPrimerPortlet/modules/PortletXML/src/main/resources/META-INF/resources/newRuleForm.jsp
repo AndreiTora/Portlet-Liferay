@@ -19,19 +19,29 @@
 </p>
 
 
-<aui:form name="fm" action="${newRule}" method="post" enctype="multipart/form-data">
+<aui:form name="fm" action="${newRule}" method="post"
+	enctype="multipart/form-data">
 
-			<aui:row>
-				<aui:col width="50">
-					<aui:input label="From" name="from" type="text" />
-				</aui:col>
-				<aui:col width="50">
-					<aui:input label="To" name="to" type="text" />
-				</aui:col>
-				<aui:col width="50">
-					<aui:input label="Type" name="type" type="text" />
-				</aui:col>
-			</aui:row>
+	<aui:row>
+		<aui:col width="50">
+			<aui:input label="From" name="from" type="text" />
+		</aui:col>
+		<aui:col width="50">
+			<aui:input label="To" name="to" type="text" />
+		</aui:col>
+		<aui:col width="50">
+			<aui:select name="type">
+				<aui:option value="forward">forward</aui:option>
+				<aui:option value="passthrough">passthrough</aui:option>
+				<aui:option value="redirect">redirect</aui:option>
+				<aui:option value="permanent-redirect">permanent-redirect</aui:option>
+				<aui:option value="temporary-redirect">temporary-redirect</aui:option>
+				<aui:option value="pre-include">pre-include</aui:option>
+				<aui:option value="post-include">post-include</aui:option>
+				<aui:option value="proxy">proxy</aui:option>
+			</aui:select>
+		</aui:col>
+	</aui:row>
 	<aui:button-row>
 		<aui:button name="newRule" type="submit" value="Submit" />
 	</aui:button-row>
